@@ -1,4 +1,7 @@
 {
-  "name": "application-name",
-  "version": "0.0.1"
+  "name": "knowledge-finder-api",
+  "version": "0.0.1",
+  "dependencies": {
+    "hapi": "^8.2.0"
+  }
 }
