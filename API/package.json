@@ -1,7 +1,13 @@
 {
   "name": "knowledge-finder-api",
   "version": "0.0.1",
+  "scripts": {
+    "start": "6to5 -i node_modules app --out-dir .tmp"
+  },
   "dependencies": {
     "hapi": "^8.2.0"
+  },
+  "devDependencies": {
+    "6to5": "^3.5.3"
   }
 }

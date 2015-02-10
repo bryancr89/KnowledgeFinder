@@ -20,5 +20,7 @@ server.route({
 	}
 });
 
+let x = 10;
+console.log(x);
 server.start();
 console.log('Server listen on port:', config.port);
