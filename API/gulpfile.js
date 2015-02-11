@@ -11,7 +11,7 @@ gulp.task('6to5', function() {
 });
 
 gulp.task('mocha', ['6to5'], function() {
-	return gulp.src(['test/*.js'], { read: false })
+	return gulp.src(['test/**/*.spec.js'], { read: false })
 		.pipe(cover.instrument({
 			pattern: ['.tmp/*.js']
 		}))
