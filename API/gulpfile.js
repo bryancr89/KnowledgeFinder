@@ -2,10 +2,18 @@ var gulp = require('gulp');
 var mocha = require('gulp-mocha');
 var gutil = require('gulp-util');
 var cover = require('gulp-coverage');
-gulp.task('mocha', function() {
+var to5 = require("gulp-6to5");
+
+gulp.task('6to5', function() {
+	return gulp.src("app/**/*.js")
+		.pipe(to5())
+		.pipe(gulp.dest('.tmp'));
+});
+
+gulp.task('mocha', ['6to5'], function() {
 	return gulp.src(['test/*.js'], { read: false })
 		.pipe(cover.instrument({
-			pattern: ['app/*.js']
+			pattern: ['.tmp/*.js']
 		}))
 		.pipe(mocha({ reporter: 'list' }))
 		.pipe(cover.gather())
