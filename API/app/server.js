@@ -1,6 +1,3 @@
-/**
- * Created by bryan on 2/9/15.
- */
 'use strict';
 var Hapi = require('hapi');
 var environment = process.env.NODE_ENV;
@@ -20,7 +17,5 @@ server.route({
 	}
 });
 
-let x = 10;
-console.log(x);
 server.start();
 console.log('Server listen on port:', config.port);
