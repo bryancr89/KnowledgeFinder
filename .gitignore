@@ -4,3 +4,5 @@ node_modules
 .coverdata
 .coverrun
 code-coverage
+npm-debug.log
+

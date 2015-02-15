@@ -10,7 +10,7 @@ gulp.task('6to5', function() {
 		.pipe(gulp.dest('.tmp'));
 });
 
-gulp.task('mocha', ['6to5'], function() {
+gulp.task('test', ['6to5'], function() {
 	return gulp.src(['test/**/*.spec.js'], { read: false })
 		.pipe(cover.instrument({
 			pattern: ['.tmp/*.js']
@@ -22,6 +22,6 @@ gulp.task('mocha', ['6to5'], function() {
 		.on('error', gutil.log);
 });
 
-gulp.task('watch-mocha', function() {
-	gulp.watch(['lib/**', 'test/**'], ['mocha']);
+gulp.task('watch-test', function() {
+	gulp.watch(['lib/**', 'test/**'], ['test']);
 });

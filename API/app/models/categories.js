@@ -1,3 +1,9 @@
-/**
- * Created by bryan on 2/9/15.
- */
+'use strict';
+var mongoose = require('mongoose');
+
+var categorySchema = new mongoose.Schema({
+	name: String,
+	description: String
+});
+
+module.exports = mongoose.model('Category', categorySchema);
