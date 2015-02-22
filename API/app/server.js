@@ -10,6 +10,31 @@ var db = mongoose.connection;
 mongoose.connect(config.dbPath);
 server.connection({ host: config.host, port: config.port });
 routes.forEach(route => server.route(route));
-server.start();
 
-console.log('Server listen on port:', config.port);
+var options = {
+	opsInterval: 1000,
+	reporters: [{
+		reporter: require('good-console'),
+		args: [{ log: '*', response: '*' }]
+	}, {
+		reporter: require('good-file'),
+		args: ['./server.log', { ops: '*' }]
+	}, {
+		reporter: require('good-http'),
+		args: [{ error: '*' }, 'http://prod.logs:3000', {
+			threshold: 20,
+			wreck: {
+				headers: { 'x-api-key': 12345 }
+			}
+		}]
+	}]
+};
+
+server.register({ register: require('good'), options: options },
+	(err) => {
+		if (err) return console.error(err);
+		server.start(() => {
+			console.info('Server started at ' + server.info.uri);
+		});
+	}
+);

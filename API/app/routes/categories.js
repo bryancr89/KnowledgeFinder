@@ -1,12 +1,13 @@
 'use strict';
+var categoriesLogic = require('../logic/categories');
 var path = '/categories';
 var routes = [];
 
 routes.push({
 	method: 'GET',
 	path: path,
-	handler: function (request, reply) {
-		reply('Should return the list of categories');
+	handler: (request, reply) => {
+		reply('Should return a list of categories!!');
 	}
 });
 
@@ -14,7 +15,11 @@ routes.push({
 	method: 'GET',
 	path: path + '/{id}',
 	handler: function (request, reply) {
-		reply('Should return the category based on the id');
+		categoriesLogic.getById(1).then((response) => {
+			reply(response);
+		}, (error) => {
+			reply(JSON.parse(error));
+		});
 	}
 });
 

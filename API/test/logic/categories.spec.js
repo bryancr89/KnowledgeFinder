@@ -25,7 +25,7 @@ describe('Logic/Categories', function () {
 	});
 
 	beforeEach('Initialize db access', function () {
-		saveFakeMongo = sinon.stub();
+		//saveFakeMongo = sinon.stub();
 	});
 
 	it('should add a new category', function () {
@@ -40,11 +40,28 @@ describe('Logic/Categories', function () {
 	});
 
 	it('should return an error if there is a category with the same name', function () {
+		var newCategory = { name: '', description: 'A dummy stuff' },
+			callback = sinon.stub();
 
+		fakeModel.save.yields(new Error('Opps'), newCategory);
+
+		categoryLogic.save(newCategory, callback);
+
+		expect(callback).to.have.been.called;
+		expect(callback.getCall(0).args[0]).to.not.be.null;
 	});
 
 	it('should return null if the the category doesn\'t exist', function () {
+		var newCategory = { name: '', description: 'A dummy stuff' },
+			callback = sinon.stub();
 
+		fakeModel.save.yields(null, null);
+
+		categoryLogic.save(newCategory, callback);
+
+		expect(callback).to.have.been.called;
+		expect(callback.getCall(0).args[0]).to.not.be.null;
+		expect(callback.getCall(0).args[1]).to.not.be.null;
 	});
 
 	it('should not allow add category without a name', function () {
