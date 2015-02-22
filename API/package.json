@@ -12,7 +12,9 @@
     "good-file": "^4.0.2",
     "good-http": "^4.0.0",
     "hapi": "^8.2.0",
-    "mongoose": "^3.8.23"
+    "lodash": "^3.3.0",
+    "mongoose": "^3.8.23",
+    "supertest": "^0.15.0"
   },
   "devDependencies": {
     "6to5": "^3.6.5",

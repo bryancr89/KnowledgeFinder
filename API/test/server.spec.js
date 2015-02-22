@@ -19,27 +19,31 @@ describe("API Server", function () {
 		server = {
 			connection: sinon.spy(),
 			start: sinon.spy(),
-			route: sinon.spy()
+			route: sinon.spy(),
+			register: sinon.spy(),
+			ext: sinon.spy()
 		},
 		mongoose,
 		hapi;
 
-	before('Setup Hapi Stubs', function () {
+	before('Setup Hapi Stubs', function SetupHapi() {
 		hapi = require('hapi');
 		sinon.stub(hapi, 'Server').returns(server);
 	});
 
-	before('Setup MongoDB', function () {
+	before('Setup MongoDB', function SetupMongo() {
 		mongoose = require('mongoose');
 		sinon.stub(mongoose, 'connect');
 	});
 
-	before('Setup dependencies', function () {
+	before('Setup dependencies', function SetupDependencies() {
 		proxyquire('../.tmp/server.js', {
 			Hapi: hapi,
 			mongoose: mongoose,
 			'./config': config,
-			'./routes': routes
+			'./routes': routes,
+			good: require('good'),
+			'good-console': require('good-console')
 		});
 	});
 
@@ -59,6 +63,8 @@ describe("API Server", function () {
 	});
 
 	it('should start the server', function () {
+		var spyCall = server.register.getCall(0);
+		spyCall.args[1](null);
 		expect(server.start).to.have.been.called;
 	});
 });

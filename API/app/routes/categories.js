@@ -7,19 +7,23 @@ routes.push({
 	method: 'GET',
 	path: path,
 	handler: (request, reply) => {
-		reply('Should return a list of categories!!');
+		categoriesLogic.getAll()
+			.then((response) => {
+				reply(response);
+			})
+			.catch((error) => {
+				console.log(error);
+				reply(error.message);
+			});
 	}
 });
 
 routes.push({
 	method: 'GET',
 	path: path + '/{id}',
-	handler: function (request, reply) {
-		categoriesLogic.getById(1).then((response) => {
-			reply(response);
-		}, (error) => {
-			reply(JSON.parse(error));
-		});
+	handler: (request, reply) => {
+		var promise = categoriesLogic.getById(request.params.id);
+		commonHandlePromise(promise, reply);
 	}
 });
 
@@ -27,7 +31,8 @@ routes.push({
 	method: 'POST',
 	path: path,
 	handler: function (request, reply) {
-		reply('Should add the category');
+		var promise = categoriesLogic.save(request.payload);
+		commonHandlePromise(promise, reply);
 	}
 });
 
@@ -35,7 +40,8 @@ routes.push({
 	method: 'PUT',
 	path: path,
 	handler: function (request, reply) {
-		reply('Should update the category');
+		var promise = categoriesLogic.update(request.payload);
+		commonHandlePromise(promise, reply);
 	}
 });
 
@@ -43,10 +49,20 @@ routes.push({
 	method: 'DELETE',
 	path: path,
 	handler: function (request, reply) {
-		reply('Should delete the category');
+		var promise = categoriesLogic.remove(request.paramas.id);
+		commonHandlePromise(promise, reply);
 	}
 });
 
-console.log('hi');
+function commonHandlePromise(promise, reply) {
+	promise
+		.then((response) => {
+			reply(response);
+		})
+		.catch((error) => {
+			console.log(error);
+			reply(error.message);
+		});
+}
 
 module.exports = routes;

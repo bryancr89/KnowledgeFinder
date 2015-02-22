@@ -28,40 +28,37 @@ describe('Logic/Categories', function () {
 		//saveFakeMongo = sinon.stub();
 	});
 
-	it('should add a new category', function () {
-		var newCategory = { name: 'test', description: 'A dummy stuff' },
-			callback = sinon.stub();
+	it('should add a new category', function (done) {
+		var newCategory = { name: 'test', description: 'A dummy stuff' };
 		fakeModel.save.yields(null, newCategory);
 
-		categoryLogic.save(newCategory, callback);
+		categoryLogic.save(newCategory).then(done.bind(null, null), done);
 
-		expect(callback).to.have.been.calledWith(null, newCategory);
+		expect(fakeModel.save).to.have.been.called;
 		expect(categoryModel).to.have.been.calledWith(newCategory);
 	});
 
-	it('should return an error if there is a category with the same name', function () {
-		var newCategory = { name: '', description: 'A dummy stuff' },
-			callback = sinon.stub();
+	it('should return an error if there is a category with the same name', function (done) {
+		var newCategory = { name: '', description: 'A dummy stuff' };
+		fakeModel.save.yields(new Error('Opps'), null);
 
-		fakeModel.save.yields(new Error('Opps'), newCategory);
-
-		categoryLogic.save(newCategory, callback);
-
-		expect(callback).to.have.been.called;
-		expect(callback.getCall(0).args[0]).to.not.be.null;
+		var promise = categoryLogic.save(newCategory);
+		promise.catch(function (error) {
+			done();
+			expect(error).to.not.be.null;
+		});
 	});
 
-	it('should return null if the the category doesn\'t exist', function () {
+	it('should return an error if the the category doesn\'t exist', function () {
 		var newCategory = { name: '', description: 'A dummy stuff' },
-			callback = sinon.stub();
+			errorMessage = 'Category doesnt exist';
 
-		fakeModel.save.yields(null, null);
+		fakeModel.save.yields(new Error(errorMessage), null);
 
-		categoryLogic.save(newCategory, callback);
-
-		expect(callback).to.have.been.called;
-		expect(callback.getCall(0).args[0]).to.not.be.null;
-		expect(callback.getCall(0).args[1]).to.not.be.null;
+		categoryLogic.save(newCategory).catch(function(error) {
+			done();
+			expect(errorMessage).to.equal(error.message);
+		});
 	});
 
 	it('should not allow add category without a name', function () {
