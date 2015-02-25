@@ -16,28 +16,31 @@ describe("API Server", function () {
 			method: 'GET',
 			path: 'test'
 		}],
-		server = {
-			connection: sinon.spy(),
-			start: sinon.spy(),
-			route: sinon.spy(),
-			register: sinon.spy(),
-			ext: sinon.spy()
-		},
+		hapiServer,
+		server,
 		mongoose,
-		hapi;
-
-	before('Setup Hapi Stubs', function SetupHapi() {
-		hapi = require('hapi');
-		sinon.stub(hapi, 'Server').returns(server);
-	});
+		hapi,
+		hapiSandbox;
 
 	before('Setup MongoDB', function SetupMongo() {
 		mongoose = require('mongoose');
 		sinon.stub(mongoose, 'connect');
 	});
 
-	before('Setup dependencies', function SetupDependencies() {
-		proxyquire('../.tmp/server.js', {
+	beforeEach('Setup Hapi Stubs', function SetupHapi() {
+		hapi = require('hapi');
+		hapiServer = {
+			connection: sinon.spy(),
+			start: sinon.spy(),
+			route: sinon.spy(),
+			register: sinon.stub(),
+			ext: sinon.spy()
+		};
+		hapiSandbox = sinon.stub(hapi, 'Server').returns(hapiServer);
+	});
+
+	beforeEach('Setup dependencies', function SetupDependencies() {
+		server = proxyquire('../.tmp/server.js', {
 			Hapi: hapi,
 			mongoose: mongoose,
 			'./config': config,
@@ -47,24 +50,35 @@ describe("API Server", function () {
 		});
 	});
 
+	afterEach('Clean Hapi Stubs', function clenaHapiServer() {
+		hapiSandbox.restore();
+		hapiServer = null;
+	});
+
 	it('should start the mongodb instance', function () {
 		expect(mongoose.connect).to.have.been.calledWithMatch(config.dbPath);
 	});
 
 	it('should call server.connection for establish the host/port values', function () {
-		expect(server.connection).to.have.been.calledWith({
+		expect(hapiServer.connection).to.have.been.calledWith({
 			host: config.host,
 			port: config.port
 		});
 	});
 
 	it('should initialize the routes', function () {
-		expect(server.route).to.have.been.calledWith(routes[0]);
+		expect(hapiServer.route).to.have.been.calledWith(routes[0]);
 	});
 
 	it('should start the server', function () {
-		var spyCall = server.register.getCall(0);
-		spyCall.args[1](null);
-		expect(server.start).to.have.been.called;
+		hapiServer.register = sinon.stub().yields(null);
+		server.start();
+		expect(hapiServer.start).to.have.been.called;
+	});
+
+	it('should not start the server if something goes wrong', function () {
+		hapiServer.register.yields(new Error());
+		server.start();
+		expect(hapiServer.start).to.not.been.called;
 	});
 });
