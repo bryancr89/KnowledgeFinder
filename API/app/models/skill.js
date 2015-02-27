@@ -7,4 +7,4 @@ var skillSchema = mongoose.Schema({
 	categories: [mongoose.Schema.Types.ObjectId]
 });
 
-module.exports = mongoose.model('skillSchema', skillSchema)
+module.exports = mongoose.model('skillSchema', skillSchema);

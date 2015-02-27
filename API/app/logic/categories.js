@@ -3,11 +3,17 @@ var _ = require('lodash');
 var Category = require('../models/category');
 
 function save(category) {
+	category = cleanFields(category);
 	var newCategory = new Category(category);
 
 	return new Promise((resolve, reject) => {
 		newCategory.save(commonPromiseCallback(resolve, reject));
-	})
+	});
+}
+
+function cleanFields(category) {
+	category.name = category.name.trim();
+	return category;
 }
 
 function update(newCategory) {
@@ -15,9 +21,9 @@ function update(newCategory) {
 		getById(newCategory._id)
 			.then((oldCategory) => {
 				_.extend(oldCategory, newCategory);
-				oldCategory.save(commonPromiseCallback(resolve, reject));
+				return oldCategory.save(commonPromiseCallback(resolve, reject));
 			});
-	})
+	});
 }
 
 function getAll() {
@@ -39,7 +45,7 @@ function getRange() {
 
 function remove(id) {
 	return new Promise((resolve, reject) => {
-		Category.remove({id}, commonPromiseCallback(resolve, reject));
+		Category.remove({ id }, commonPromiseCallback(resolve, reject));
 	});
 }
 
@@ -47,10 +53,11 @@ function commonPromiseCallback(resolve, reject) {
 	return (error, data) => {
 		if (error) return reject({ message: error.message });
 		resolve(data);
-	}
+	};
 }
 
 module.exports = {
+	cleanFields,
 	save,
 	update,
 	getAll,
